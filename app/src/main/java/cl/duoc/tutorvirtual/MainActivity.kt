@@ -3,45 +3,88 @@ package cl.duoc.tutorvirtual
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import cl.duoc.tutorvirtual.ui.theme.TutorVirtualESUCARTheme
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            TutorVirtualESUCARTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            MaterialTheme {
+                TutorVirtualApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun TutorVirtualApp() {
+    var pantalla by remember { mutableStateOf("Inicio") }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TutorVirtualESUCARTheme {
-        Greeting("Android")
+    BackHandler(enabled = pantalla != "Inicio") {
+        pantalla = "Inicio"
+    }
+
+    Scaffold(
+        topBar = {
+            Surface(tonalElevation = 3.dp) {
+                Text(
+                    text = "Tutor Virtual ESUCAR",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                )
+            }
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (pantalla == "Inicio") {
+                Text(
+                    "Bienvenido al Tutor Virtual",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text("Apoyo para Trabajo de Título I, II y III.")
+
+                listOf(
+                    "Guía metodológica",
+                    "Preguntas frecuentes",
+                    "Mis avances",
+                    "Mi perfil"
+                ).forEach { destino ->
+                    Button(
+                        onClick = { pantalla = destino },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(destino)
+                    }
+                }
+            } else {
+                Text(
+                    pantalla,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Text("Módulo preparado para próximas actividades.")
+
+                OutlinedButton(
+                    onClick = { pantalla = "Inicio" }
+                ) {
+                    Text("Volver al inicio")
+                }
+            }
+        }
     }
 }
